@@ -9,7 +9,7 @@ CXX = g++
 CXXFLAGS = -Wall -std=c++11 -g -c 
 LFLAGS = -Wall -std=c++11 -g
 
-Chess: $(OBJS)
+Chess: $(OBJ_FILES)
 	$(CXX) $(LFLAGS) $(OBJ_FILES) -o Chess
 
 ChessMain.o: ChessBoard.hpp ChessMain.cpp

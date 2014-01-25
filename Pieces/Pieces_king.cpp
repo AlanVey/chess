@@ -14,13 +14,7 @@ bool King::validMove(const char* from, const char* to, struct game *game)
   if(~BasePiece::validMove(from, to, game))
     return false;
 
-  if(fileDiff <= 1 && rankDiff <= 1)
-  {
-    //TODO: Implement this
-    return true;
-  }
-
-  return false;
+  return fileDiff <= 1 && rankDiff <= 1;
 }
 
 bool King::isKing() { return true; }

@@ -29,6 +29,9 @@ void ChessBoard::submitMove(const char* fromSquare, const char* toSquare)
 
   if(game.board[fromFile][fromRank]->validMove(fromSquare, toSquare, &game))
   {
+    if(game.board[toFile][toRank]->isKing() && ChessBoard::kingInCheck(fromSquare, toSquare))
+      return;
+
     if(game.board[toFile][toRank] != 0)
       ChessBoard::capturePiece(toFile, toRank);
 
@@ -96,4 +99,26 @@ void ChessBoard::capturePiece(int file, int rank)
 
   delete piece;
   game.board[file][rank] = 0;
+}
+
+bool ChessBoard::kingInCheck(const char* from, const char* to)
+{
+  const int fromFile   = from[0] - 'A';
+  const int fromRank   = from[1] - '1';
+  const int toFile     = to[0]   - 'A';
+  const int toRank     = to[1]   - '1';
+  BasePiece* king      = game.board[fromFile][fromRank];
+  BasePiece* destPiece = game.board[toFile][toRank];
+
+  game.board[fromFile][fromRank] = 0;
+  game.board[toFile][toRank]     = king;
+
+  if(ChessBoard::isCheck())
+  {  
+    game.board[fromFile][fromRank] = king;
+    game.board[toFile][toRank]     = destPiece;
+    std::cout << "You cannot move your king into check" << std::endl;
+    return true;
+  }
+  return false;
 }

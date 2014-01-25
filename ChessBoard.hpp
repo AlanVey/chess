@@ -65,6 +65,7 @@ class ChessBoard
 {
   void createPiece(BasePiece* piece);
   void capturePiece(int file, int rank);
+  bool kingInCheck(const char* from, const char* to);
 
   public:
     struct game game;
