@@ -26,11 +26,24 @@ void ChessBoard::submitMove(const char* fromSquare, const char* toSquare)
   int fromRank = fromSquare[1] - '1';
   int toFile   = toSquare[0] - 'A';
   int toRank   = toSquare[1] - '1';
+  bool notOnBoard = notInRange(0, 7, fromFile) || notInRange(0, 7, toFile) ||
+                    notInRange(0, 7, fromRank) || notInRange(0, 7, toRank);
 
-  if(game.board[fromFile][fromRank]->validMove(fromSquare, toSquare, &game))
+  std::cout << "Your Move: " << fromSquare << toSquare << std::endl;
+
+  if(notOnBoard)
+    std::cout << "Specified position is not on the board" << std::endl;
+  else if(game.board[fromFile][fromRank] == 0)
+    std::cout << "You tried to move a non existant piece" << std::endl;
+  else if(game.board[fromFile][fromRank]->
+          validMove(toFile, toRank, &game))
   {
-    if(game.board[toFile][toRank]->isKing() && ChessBoard::kingInCheck(fromSquare, toSquare))
+    if(game.board[toFile][toRank]->isKing() && 
+       ChessBoard::kingInCheck(game.board[toFile][toRank], toFile, toRank))
+    {
+      std::cout << "You cannot move your king into check" << std::endl;
       return;
+    }
 
     if(game.board[toFile][toRank] != 0)
       ChessBoard::capturePiece(toFile, toRank);
@@ -42,6 +55,8 @@ void ChessBoard::submitMove(const char* fromSquare, const char* toSquare)
     ChessBoard::isCheck();
     ChessBoard::nextMove();
 
+    //TODO; double check auto reset if checkmate
+    //Maybe make all input output game over when in this state
     if(ChessBoard::isCheckMate())
       ChessBoard::resetBoard();
   }
@@ -101,24 +116,35 @@ void ChessBoard::capturePiece(int file, int rank)
   game.board[file][rank] = 0;
 }
 
-bool ChessBoard::kingInCheck(const char* from, const char* to)
+bool ChessBoard::kingInCheck(BasePiece* king, int toFile, int toRank)
 {
-  const int fromFile   = from[0] - 'A';
-  const int fromRank   = from[1] - '1';
-  const int toFile     = to[0]   - 'A';
-  const int toRank     = to[1]   - '1';
-  BasePiece* king      = game.board[fromFile][fromRank];
-  BasePiece* destPiece = game.board[toFile][toRank];
+  bool inCheck                                 = false;
+  BasePiece* destPiece                         = game.board[toFile][toRank];
+  game.board[king->getFile()][king->getRank()] = 0;
+  game.board[toFile][toRank]                   = king;
+  inCheck                                      = ChessBoard::isCheck() != 0;
+  game.board[king->getFile()][king->getRank()] = king;
+  game.board[toFile][toRank]                   = destPiece;
+  return inCheck;
+}
 
-  game.board[fromFile][fromRank] = 0;
-  game.board[toFile][toRank]     = king;
+bool ChessBoard::notInRange(int min, int max, int value)
+{
+  return value > max || value < min;
+}
 
-  if(ChessBoard::isCheck())
-  {  
-    game.board[fromFile][fromRank] = king;
-    game.board[toFile][toRank]     = destPiece;
-    std::cout << "You cannot move your king into check" << std::endl;
-    return true;
+void ChessBoard::printBoard()
+{
+  std::cout << "Whites turn = " << game.isWhitesMove << std::endl;
+  for(int i = 0; i < 8; i++)
+  {
+    for(int j = 0; j < 8; j++)
+    {
+      if(game.board[i][j] != 0)
+        std::cout << "1";
+      else
+        std::cout << "0";
+    }
+    std::cout << std::endl;
   }
-  return false;
 }

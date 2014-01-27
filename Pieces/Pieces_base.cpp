@@ -13,31 +13,16 @@ BasePiece::~BasePiece() {}
 BasePiece::BasePiece(int file, int rank, bool white)
 {
   this->white = white;
-  this->file = file;
-  this->rank = rank;
+  this->fromFile = file;
+  this->fromRank = rank;
 }
 
-bool BasePiece::validMove(const char* from, const char* to, struct game *game)
+bool BasePiece::validMove(int toFile, int toRank, struct game *game)
 {
-  fileStart  = from[0] - 'A';
-  fileFinish = from[0] - 'A';
-  rankStart  = from[1] - '1';
-  rankFinish = from[1] - '1';
-  fileDiff   = abs(fileStart - fileFinish);
-  rankDiff   = abs(rankStart - rankFinish);
+  fileDiff   = abs(fromFile - toFile);
+  rankDiff   = abs(fromRank - toRank);
 
-  if(inRange(0, 7, fileStart) && inRange(0, 7, fileFinish) &&
-     inRange(0, 7, rankStart) && inRange(0, 7, rankStart))
-  {
-    std::cout << "Specified position is not on the board" << std::endl;
-    return false;
-  }
-  else if(game->board[fileStart][rankStart] != 0)
-  {
-    std::cout << "You tried to move a non existant piece" << std::endl;
-    return false;
-  }
-  else if(game->isWhitesMove && ~game->board[fileStart][rankStart]->white)
+  if(game->isWhitesMove && ~game->board[fromFile][fromRank]->white)
   {
     std::cout << "You tried to move an opponents piece" << std::endl;
     return false;
@@ -47,8 +32,8 @@ bool BasePiece::validMove(const char* from, const char* to, struct game *game)
     std::cout << "You tried to move a piece to its current location" << std::endl;
     return false;
   }
-  else if(game->board[fileStart][rankStart]->isWhite() != 
-          game->board[fileFinish][rankFinish]->isWhite())
+  else if(game->board[fromFile][fromRank]->isWhite() != 
+          game->board[toFile][toRank]->isWhite())
   {
     std::cout << "You tried to attack your own piece" << std::endl;
     return false;
@@ -56,40 +41,40 @@ bool BasePiece::validMove(const char* from, const char* to, struct game *game)
   return true;
 }
 
-bool BasePiece::hCheck(struct game *game)
+bool BasePiece::hCheck(int toFile, int toRank, struct game *game)
 {
-  int current = fileStart - 1;
+  int current = fromFile - 1;
   int sign = -1;
 
-  if(fileStart < fileFinish)
+  if(fromFile < toFile)
   {
-    current = fileStart + 1;
+    current = fromFile + 1;
     sign = 1;
   }
 
-  while((sign * current) < (sign * fileFinish))
+  while((sign * current) < (sign * toFile))
   {
-    if(game->board[current][rankStart] != 0)
+    if(game->board[current][fromRank] != 0)
       return false; 
     current += sign;
   }
   return true;
 }
 
-bool BasePiece::vCheck(struct game *game)
+bool BasePiece::vCheck(int toFile, int toRank, struct game *game)
 {
-  int current = rankStart - 1;
+  int current = fromRank - 1;
   int sign = -1;
 
-  if(rankStart < rankFinish)
+  if(fromRank < toRank)
   {
-    current = rankStart + 1;
+    current = fromRank + 1;
     sign = 1;
   }
 
-  while((sign * current) < (sign * rankFinish))
+  while((sign * current) < (sign * toRank))
   {
-    if(game->board[fileStart][current] != 0)
+    if(game->board[fromFile][current] != 0)
       return false; 
     current += sign;
   }
@@ -97,36 +82,36 @@ bool BasePiece::vCheck(struct game *game)
 }
 
 // TODO: Double check this method works
-bool BasePiece::dCheck(struct game *game)
+bool BasePiece::dCheck(int toFile, int toRank, struct game *game)
 {
-  int currentH = fileStart - 1;
-  int currentV = rankStart - 1;
+  int currentH = fromFile - 1;
+  int currentV = fromRank - 1;
   int signH = -1;
   int signV = -1;
 
-  if(rankStart < rankFinish && fileStart < fileFinish)
+  if(fromRank < toRank && fromFile < toFile)
   {
-    currentH = fileStart + 1;
-    currentV = rankStart + 1;
+    currentH = fromFile + 1;
+    currentV = fromRank + 1;
     signH = 1;
     signV = 1;
   }
-  else if (rankStart < rankFinish && fileStart > fileFinish)
+  else if (fromRank < toRank && fromFile > toFile)
   {
-    currentH = fileStart + 1;
-    currentV = rankStart - 1;
+    currentH = fromFile + 1;
+    currentV = fromRank - 1;
     signH = 1;
     signV = -1;
   }
-  else if (rankStart > rankFinish && fileStart < fileFinish)
+  else if (fromRank > toRank && fromFile < toFile)
   {
-    currentH = fileStart - 1;
-    currentV = rankStart + 1;
+    currentH = fromFile - 1;
+    currentV = fromRank + 1;
     signH = -1;
     signV = 1;
   }
 
-  while((signH * currentH) < (signH * rankFinish))
+  while((signH * currentH) < (signH * toRank))
   {
     if(game->board[currentH][currentV] != 0)
       return false; 
@@ -138,13 +123,13 @@ bool BasePiece::dCheck(struct game *game)
 
 void BasePiece::setFileRank(const char* position)
 {
-  file = position[0] - 'A';
-  rank = position[1] - '1';
+  fromFile = position[0] - 'A';
+  fromRank = position[1] - '1';
 }
 
-int BasePiece::getFile() { return file; }
+int BasePiece::getFile() { return fromFile; }
 
-int BasePiece::getRank() { return rank; }
+int BasePiece::getRank() { return fromRank; }
 
 bool BasePiece::isWhite() { return white; }
 

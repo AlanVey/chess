@@ -20,18 +20,13 @@
 
 class BasePiece
 {
-  static inline bool inRange(int min, int max, int item)
-  {
-    return item >= min && item <= max;
-  }
-
   protected:
-    int file, rank, fileStart, fileFinish, rankStart, rankFinish, fileDiff, rankDiff;
+    int fromFile, fromRank, fileDiff, rankDiff;
     bool white;
 
-    bool hCheck(struct game *game);
-    bool vCheck(struct game *game);
-    bool dCheck(struct game *game);
+    bool hCheck(int toFile, int toRank, struct game *game);
+    bool vCheck(int toFile, int toRank, struct game *game);
+    bool dCheck(int toFile, int toRank, struct game *game);
 
   public:
     BasePiece(int file, int rank, bool white);
@@ -42,7 +37,7 @@ class BasePiece
     virtual ~BasePiece();
     virtual bool isKing();
     virtual bool isKnight();
-    virtual bool validMove(const char* from, const char* to, struct game *game);
+    virtual bool validMove(int toFile, int toRank, struct game *game);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,9 +58,10 @@ struct game
 
 class ChessBoard
 {
+  bool notInRange(int min, int max, int value);
   void createPiece(BasePiece* piece);
   void capturePiece(int file, int rank);
-  bool kingInCheck(const char* from, const char* to);
+  bool kingInCheck(BasePiece* king, int toFile, int toRank);
 
   public:
     struct game game;
@@ -76,8 +72,10 @@ class ChessBoard
     void resetBoard();
     void submitMove(const char* fromSquare, const char* toSquare);
     void nextMove();
-    bool isCheck();
+    BasePiece* isCheck();
     bool isCheckMate();
+    void printBoard();
+    bool movePieceToRemoveCheck(BasePiece* piece, BasePiece* king);
 };
 
 #endif

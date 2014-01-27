@@ -17,7 +17,7 @@ class King : public BasePiece
 {
   public:
     King(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);  
+    bool validMove(int toFile, int toRank, struct game *game);  
     bool isKing();
 };
 
@@ -25,28 +25,28 @@ class Rook : public BasePiece
 {
   public:
     Rook(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);
+    bool validMove(int toFile, int toRank, struct game *game);
 };
 
 class Bishop : public BasePiece
 {
   public:
     Bishop(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);
+    bool validMove(int toFile, int toRank, struct game *game);
 };
 
 class Queen : public BasePiece
 {
   public:
     Queen(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);
+    bool validMove(int toFile, int toRank, struct game *game);
 };
 
 class Knight : public BasePiece
 {
   public:
     Knight(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);
+    bool validMove(int toFile, int toRank, struct game *game);
     bool isKnight();
 };
 
@@ -56,7 +56,7 @@ class Pawn : public BasePiece
     bool firstMove;
   public:
     Pawn(int file, int rank, bool white);
-    bool validMove(const char* from, const char* to, struct game *game);
+    bool validMove(int toFile, int toRank, struct game *game);
 };
 
 #endif

@@ -19,15 +19,19 @@ int main() {
     cout << endl;
 
     cb.submitMove("D7", "D6");
+    cb.printBoard();
     cout << endl;
 
     cb.submitMove("D4", "H6");
+    cb.printBoard();
     cout << endl;
 
     cb.submitMove("D2", "D4");
+    cb.printBoard();
     cout << endl;
 
     cb.submitMove("F8", "B4");
+    cb.printBoard();
     cout << endl;
 
     cout << "===========================" << endl;
